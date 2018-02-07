@@ -1,0 +1,36 @@
+version: '2'
+services:
+  database:
+    image: mysql:5.7
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      - "MYSQL_DATABASE=homestead"
+      - "MYSQL_USER=homestead"
+      - "MYSQL_PASSWORD=secret"
+      - "MYSQL_ROOT_PASSWORD=secret"
+    ports:
+        - "33061:3306"
+  app:
+    build:
+      context: ./
+      dockerfile: app.dockerfile
+    ports:
+      - "4000:80"
+    volumes:
+      - appdata:/var/www
+    depends_on:
+      - database
+  laravelinit:
+    build:
+      context: ./
+      dockerfile: laravel.dockerfile
+    depends_on:
+      - app
+    volumes_from:
+      - app:rw
+  redis:
+    image: redis:latest
+volumes:
+  dbdata:
+  appdata:
